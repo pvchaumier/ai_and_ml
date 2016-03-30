@@ -1,0 +1,13 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# IPython notebook
+.ipynb_checkpoints
+
+# Mac Specific
+.DS_Store
