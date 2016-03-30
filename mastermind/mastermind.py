@@ -1,7 +1,7 @@
 # coding: utf-8
 
-"""Mastermind Game with AI
-"""
+"""Mastermind Game with AI"""
+
 __author__ = "Pierre-Victor Chaumier (chaumierpv@gmail.com)"
 
 import random
@@ -81,7 +81,8 @@ def mastermind(to_find=None, human=True, max_tries=15):
         to_find = str(to_find)
 
     # if computer plays, initialize agent
-    agent = Agent()
+    if not human:
+        agent = Agent()
 
     nb_of_try = 0
     score = -1, -1
