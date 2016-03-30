@@ -4,7 +4,7 @@
 Python command line implementation of the 2048 game.
 
 TODO:
-    - 
+    -
 """
 
 import random
@@ -18,7 +18,7 @@ class GameException(Exception):
 class Game(object):
     """2048 game implementation.
 
-    The probability of having a four are defined as a class variable.
+    The probability of having a four is defined as a class variable.
     """
 
     proba_four = 0.1
@@ -26,7 +26,7 @@ class Game(object):
     def __init__(self, grid_size=4):
         self.grid_size = grid_size
         self.score = 0
-        self.grid = [[0 for _ in range(self.grid_size)] 
+        self.grid = [[0 for _ in range(self.grid_size)]
                         for _ in range(self.grid_size)]
         self.add_number()
 
@@ -48,8 +48,8 @@ class Game(object):
                 first = False
             else:
                 str_game += '|' + '-' * (11 * self.grid_size - 1) + '|\n'
-            str_game += ('|' + '|'.join(['{:^10}'.format(el) if el != 0 
-                                          else ' '* 10 for el in row]) 
+            str_game += ('|' + '|'.join(['{:^10}'.format(el) if el != 0
+                                          else ' '* 10 for el in row])
                          + '|\n')
         str_game += ' ' + '-' * (11 * self.grid_size - 1) + '\n'
         str_game += 'score = ' + str(self.score)
@@ -70,6 +70,10 @@ class Game(object):
 
 
     def is_game_over(self):
+        """Game is over when you reach the number two power the size of grid
+        squared (e.j. if grid size is 3, the game is over if the number
+        2 ** (3 ** 2) = 2 ** 9 = 512 is reached).
+        """
         if max([max(row) for row in self.grid]) == 2 ** (self.grid_size ** 2):
             raise GameException('Congrats, You won !')
 
@@ -78,26 +82,26 @@ class Game(object):
             if 0 in row:
                 return False
 
-        # Check if two consecutive number (vertically or horizontally) are 
+        # Check if two consecutive number (vertically or horizontally) are
         # equal. In this case the game is not over.
         for i in range(self.grid_size):
             for j in range(self.grid_size):
                 # horizontal check
-                if (i < self.grid_size - 1 and 
+                if (i < self.grid_size - 1 and
                     self.grid[i][j] == self.grid[i + 1][j]):
                     return False
                 # vertical check
-                if (j < self.grid_size - 1 and 
+                if (j < self.grid_size - 1 and
                     self.grid[i][j] == self.grid[i][j + 1]):
                     return False
-        
+
         return True
 
 
     def add_number(self):
         """Add a number (two or four with probability proba_four) at random
         within the free prositons of grid ."""
-        # take one of the free positions in the grid at random 
+        # take one of the free positions in the grid at random
         x, y = random.choice(self.free_positions)
         # with the probability of Game.proba_four, put a 4 in the box. Else
         # put a 2
@@ -121,7 +125,7 @@ class Game(object):
         else:
             new_row = []
             # the points will be added if the element is equal to the next one.
-            # We thus need to know if the current position was already added at 
+            # We thus need to know if the current position was already added at
             # the previous iteration or if it needs to be added now
             already_added = False
             for i in range(len(row_trimmed[:-1])):
@@ -145,7 +149,7 @@ class Game(object):
 
 
     def sum_grid(self, grid):
-        """Takes a grid and sums all its row as if the movement was towards the 
+        """Takes a grid and sums all its row as if the movement was towards the
         left."""
         new_grid = []
         for i in range(self.grid_size):
@@ -153,11 +157,11 @@ class Game(object):
         return new_grid
 
 
-    # 
+    #
     # Mouvements
-    # 
+    #
 
-    # The idea is to define one function and then reuse it by manipulating the 
+    # The idea is to define one function and then reuse it by manipulating the
     # grid.
 
     @staticmethod
@@ -209,16 +213,16 @@ class GameTestCase(unittest.TestCase):
         # to be sure that the grid is of the good size
         self.game = Game(grid_size=4)
 
-    # 
+    #
     # Test sum on a line
-    # 
+    #
 
     def test_sum_empty(self):
-        self.assertEqual(self.game.sum_row([]), 
+        self.assertEqual(self.game.sum_row([]),
                          [0] * self.game.grid_size)
 
     def test_sum_one_element(self):
-        self.assertEqual(self.game.sum_row([1]), 
+        self.assertEqual(self.game.sum_row([1]),
                          [1] + [0] * (self.game.grid_size - 1))
 
     def test_sum_multiple_elements(self):
@@ -233,9 +237,9 @@ class GameTestCase(unittest.TestCase):
         self.assertEqual(self.game.sum_row([2, 4, 8, 16]),
                          [2, 4, 8, 16])
 
-    # 
+    #
     # Test Game Over
-    # 
+    #
 
     def test_game_over_false_zero(self):
         self.game.grid_size = 2
@@ -244,13 +248,30 @@ class GameTestCase(unittest.TestCase):
 
     def test_game_over_false_two_neighbor_equal(self):
         self.game.grid_size = 2
-        self.game.grid = [[2, 4], [2, 16]]
+        self.game.grid = [[2, 4], [2, 8]]
         self.assertFalse(self.game.is_game_over())
-    
+
     def test_game_over_true(self):
         self.game.grid_size = 2
-        self.game.grid = [[2, 4], [8, 16]]
+        self.game.grid = [[2, 4], [8, 2]]
         self.assertTrue(self.game.is_game_over())
+
+
+    # 
+    # Test miror and transpose
+    # 
+
+    def test_transpose(self):
+        self.game.grid_size = 2
+        self.game.grid = [[1, 2, 0], [3, 4, 0], [0, 0, 0]]
+        self.assertEqual(self.game.transpose(self.game.grid),
+                         [[1, 3, 0], [2, 4, 0], [0, 0, 0]])
+
+    def test_miror(self):
+        self.game.grid_size = 3
+        self.game.grid = [[1, 2, 0], [3, 4, 0], [0, 0, 0]]
+        self.assertEqual(self.game.miror(self.game.grid),
+                         [[0, 2, 1], [0, 4, 3], [0, 0, 0]])
 
 
 if __name__ == '__main__':
