@@ -163,6 +163,8 @@ class Game(object):
 
     # The idea is to define one function and then reuse it by manipulating the
     # grid.
+    # Static methods allow to compare the next state of the grid with the last
+    # one to check if the move had any effect.
 
     @staticmethod
     def transpose(grid):
@@ -174,6 +176,8 @@ class Game(object):
 
     def check_change(self, new_grid):
         if new_grid != self.grid:
+            # if there is no change in the grid, no need to add a new number
+            # or to modify the grid
             self.grid = new_grid
             self.add_number()
         if self.is_game_over():
